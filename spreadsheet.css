@@ -187,7 +187,7 @@ button.secondary:hover {
 }
 
 /* the actual input inside cells */
-/* .cell-dropdown {
+.cell-dropdown {
   width: 100%;
   box-sizing: border-box;
   padding: 6px 8px;
@@ -195,18 +195,6 @@ button.secondary:hover {
   background: transparent;
   font-size: 0.95rem;
   outline: none;
-} */
- .cell-dropdown {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 10px 36px 10px 12px;   /* more padding, room on right for arrow */
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1.1rem;              /* larger text = larger tap target */
-  background: #fff url('data:image/svg+xml;utf8,<svg fill="%232e8b57" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') 
-              no-repeat right 10px center;
-  background-size: 20px;
-  cursor: pointer;
 }
 
 /* ensure table cells don't let their contents push them larger */
