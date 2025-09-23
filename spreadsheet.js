@@ -13,23 +13,23 @@ const weaponOptions = {}; // will hold { sword: [...], unarmed: [...], ... }
 
 /* 
 Load dropdown option sets ---
-- loads o_footwork.txt, o_e.txt, and o_<weapon>.txt for each weapon in weaponTypes
+- loads options/o_footwork.txt, options/o_e.txt, and options/o_<weapon>.txt for each weapon in weaponTypes
 */
 async function loadOptions() {
   try {
     // always try footwork and e
     const baseFiles = [
-      fetch("o_footwork.txt").then(r => r.ok ? r.text() : ""),
-      fetch("o_e.txt").then(r => r.ok ? r.text() : "")
+      fetch("options/o_footwork.txt").then(r => r.ok ? r.text() : ""),
+      fetch("options/o_e.txt").then(r => r.ok ? r.text() : "")
     ];
 
     // weapon files
     const weaponFetches = weaponTypes.map(w =>
-      fetch(`o_${w}.txt`).then(res => res.ok ? res.text() : "")
+      fetch(`options/o_${w}.txt`).then(res => res.ok ? res.text() : "")
     );
 
     // Also keep a generic 'hand' file fallback (optional)
-    const handFetch = fetch("o_hand.txt").then(r => r.ok ? r.text() : "");
+    const handFetch = fetch("options/o_hand.txt").then(r => r.ok ? r.text() : "");
 
     const allResults = await Promise.all([...baseFiles, handFetch, ...weaponFetches]);
     const footworkText = allResults[0] || "";
@@ -76,6 +76,7 @@ async function loadOptions() {
     console.log("Using default option sets as fallback.");
   }
 }
+
 
 
 /* 

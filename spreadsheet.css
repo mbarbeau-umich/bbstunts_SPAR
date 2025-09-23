@@ -1,4 +1,4 @@
-.footer {
+/* .footer {
   margin-top: 30px;
   text-align: center;
   font-size: 0.9rem;
@@ -12,85 +12,9 @@
 
 .footer a:hover {
   text-decoration: underline;
-}
+} */
 
-/* Keep fighters inline */
-.fighter-option {
-  display: flex;
-  align-items: center;
-  margin: 8px 0;
-  gap: 8px;
-}
-
-.fighter-option input[type="number"],
-#numFighters {
-  width: 60px;
-  padding: 4px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  text-align: center;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  background: #f9f9f9;
-  margin: 0;
-  padding: 0;
-}
-
-.container {
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-.logo {
-  display: block;
-  max-height: 80px;
-  max-width: 100%;
-  margin: 0 auto 10px auto; /* center horizontally, margin bottom 10px */
-}
-
-h1 { margin-bottom: 20px; }
-
-label, input, select {
-  display: block;  /* keep inputs and labels block */
-  margin: 10px auto;
-  font-size: 1rem;
-}
-
-input, select {
-  padding: 8px;
-  width: 80%;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-
-/* BUTTON STYLING - imported from home page */
-button {
-  margin: 10px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-button.primary { background: #4CAF50; color: white; }
-button.secondary { background: #eee; }
-
-/* Footer styling */
-footer {
-  margin-top: 20px;
-  font-size: 0.9rem;
-  color: #555;
-}
-
-/* Header */
+/* ---------------- Header ---------------- */
 .app-header {
   display: flex;
   align-items: center;
@@ -126,6 +50,86 @@ footer {
   margin: 0;
   font-weight: bold;
 }
+
+.logo {
+  display: block;
+  max-height: 80px;
+  max-width: 100%;
+  margin: 0 auto 10px auto; /* center horizontally, margin bottom 10px */
+}
+
+/* ---------------- Spreadsheet ---------------- */
+
+
+/* Keep fighters inline */
+.fighter-option {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  gap: 8px;
+}
+
+.fighter-option input[type="number"],
+#numFighters {
+  width: 60px;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  text-align: center;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+h1 { margin-bottom: 20px; }
+
+label, input, select {
+  display: block;  /* keep inputs and labels block */
+  margin: 10px auto;
+  font-size: 1rem;
+}
+
+input, select {
+  padding: 8px;
+  width: 80%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+/* BUTTON STYLING - imported from home page */
+button {
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+button.primary { background: #4CAF50; color: white; }
+button.secondary { background: #eee; }
+
+/* Footer styling */
+/* footer {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #555;
+} */
+
 
 /* Spreadsheet Table */
 .spreadsheet-container {
@@ -235,4 +239,13 @@ button.secondary:hover {
   background: #fff;
   border-bottom: 1px solid rgba(0,0,0,0.85);
   /* box-shadow: 0 2px 0 rgba(0,0,0,1); slightly smaller shadow below subheader */
+}
+
+/* Light zebra striping */
+#spreadsheetTable tr:nth-child(even) td {
+  background-color: #f0f0f0;   /* light gray */
+}
+
+#spreadsheetTable tr:nth-child(odd) td {
+  background-color: #ffffff;   /* white */
 }

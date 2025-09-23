@@ -1,0 +1,31 @@
+advance
+retreat
+crossover advance
+crossover retreat
+gain advance
+retire retreat
+pass forward
+pass back
+lunge
+avoid stramazone (inquartata)
+balestra
+reverse belestra
+punta roversa
+punta mandritta
+double pass forward
+double pass back
+half pass
+patinando
+kick-advance
+stomp
+stop thrust (but the footwork)
+volte left
+volte right 
+demi volte left
+demi volte right
+grande volte left
+grande volte right
+recover
+passata sotto
+traverse left 
+traverse right

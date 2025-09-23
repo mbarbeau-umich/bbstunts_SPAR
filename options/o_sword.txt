@@ -1,0 +1,17 @@
+attack 1
+attack 2
+attack 3
+attack 4 
+attack 5
+parry 1
+parry 2
+parry 3
+parry 4
+parry 5
+universal parry
+parry 5 base
+parry 5b
+lunge
+punta roversa
+punta mandritta
+corpse-a-corpse

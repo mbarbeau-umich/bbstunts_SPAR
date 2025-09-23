@@ -8,7 +8,6 @@
 
 - [Authors](#authors)  
 - [Purpose](#purpose)  
-- [Installation](#installation)  
 - [Usage](#usage)  
 - [Features](#features)  
 - [Contributing](#contributing)  
@@ -22,39 +21,64 @@
 This tool was created and maintained by the **Brothers Barbeau Stunt Team**.  
 
 - Website: [bbstunts.com](https://bbstunts.com)  
-- Email: [thebrothersbarbeau@gmail.com](mailto:thebrothersbarbeau@gmail.com)
-
----
-
-## About SPAR
-
-**SPAR** was created to document fight choreography without breaking flow. It was designed for performers who need to take notes one-handed while holding a weapon in the other. The tool is fast, repeatable, consistent, and optimized for the unique demands of stunt performance.
+- Email: [thebrothersbarbeau@gmail.com](mailto:thebrothersbarbeau@gmail.com) & [mbarbeau@umich.edu](mailto:mbarbeau@umich.edu)
 
 ---
 
 ## Purpose
 
+**SPAR** was created to document fight choreography without breaking flow.  
+It was designed for performers who need to take notes one-handed while holding a weapon in the other.  
+
 SPAR is intended to streamline fight choreography documentation, enabling stunt teams to:
 
-- Record fight sequences in a structured spreadsheet.
-- Track individual fighter moves including footwork, hands, weapons, and stage directions.
-- Export spreadsheets for rehearsal notes, production records, or archiving.
-- Work seamlessly on mobile devices during live rehearsals.
+- Record fight sequences in a structured spreadsheet.  
+- Track individual fighter moves including footwork, hands, weapons, and stage directions.  
+- Export spreadsheets for rehearsal notes, production records, or archiving.  
+- Work seamlessly on mobile devices during live rehearsals.  
 
 ---
 
-## Free Use
-
-SPAR is free for anyone to use. Feedback, stories, and encouragement are always appreciated. Donations are welcome but optional.  
-
-If your team would like to collaborate or have a **custom version** of SPAR tailored to your workflow, we are open to working with other stunt teams to build specialized tools. Reach out to discuss your needs — we love collaborating on custom solutions!
+## Usage
+1. Use SPAR directly in your browser:  
+   👉 [SPAR Website](https://spar.bbstunts.com/)  
 
 ---
 
-## Installation
+## Features
 
-1. [SPAR website](https://mbarbeau-umich.github.io/bbstunts_SPAR/)
+- Browser-based, works on desktop and mobile
+- One-handed use design (usable while holding a weapon)
+- Structured choreography logging: footwork, weapon, energy, notes
+- Excel export for sharing or archiving
+- Customizable dropdowns for different weapon types
+- Extendable to custom team workflows
 
-2. To edit or customize SPAR, clone or download the repository:  
-   ```bash
-   git clone https://github.com/yourusername/SPAR.git
+---
+
+## Contributing
+
+Reach out to [thebrothersbarbeau@gmail.com](mailto:thebrothersbarbeau@gmail.com) with your request to gain access to the main repository.
+
+## Feedback / Bugs
+
+If you encounter issues, have suggestions, or simply want to share how you use SPAR, please fill out the [Feedback Form](https://forms.gle/We1pN5A5YFKbH4xSA) or email us at [thebrothersbarbeau@gmail.com](mailto:thebrothersbarbeau@gmail.com)
+
+--- 
+
+## License
+
+### Free to Use
+
+SPAR is free for anyone to use. Feedback, stories, and encouragement are always appreciated. Donations are welcome but optional.
+
+### Customizable
+
+Every team trains differently. If you’d like a version of SPAR tailored to your own workflow, we’re open to collaborating on custom builds.
+
+### Safety & Data
+
+SPAR is a training tool, not a substitute for judgment or supervision. Only practice, rehearse, or perform at the level you’re comfortable with.
+The Brothers Barbeau Stunt Team is not responsible for injuries, accidents, or outcomes that may occur while using SPAR.
+
+By using the app, you understand there is no guarantee of privacy. Materials created in SPAR are considered part of BB Stunts’ shared training resources.

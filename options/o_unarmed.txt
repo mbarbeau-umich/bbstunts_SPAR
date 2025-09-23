@@ -1,0 +1,6 @@
+right cross
+left cross
+hay maker (r)
+hay maker (l)
+right wing block 
+left wing block 
