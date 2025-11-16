@@ -14,26 +14,44 @@
   <h1>SPAR</h1>
   <h2>Stunt Planning And Recording</h2>
 
-  <label for="author">Author(s):</label>
-  <input type="text" id="author" placeholder="Enter author name(s)">
+  <div class="form-row">
+    <label for="fightTitle">Fight Title:</label>
+    <input type="text" id="fightTitle" placeholder="Enter fight title">
+  </div>
 
-  <label for="fightName">Fight Name:</label>
-  <input type="text" id="fightName" placeholder="Enter fight title">
+  <div class="form-row">
+    <label for="author">Author(s):</label>
+    <input type="text" id="author" placeholder="Enter author name(s)">
+  </div>
 
-  <label for="numFighters">Number of Combatants:</label>
-  <!-- <input type="number" id="numFighters" min="2" max="5" value="2" onchange="updateFighterOptions()"> -->
-  <select id="numFighters" onchange="updateFighterOptions()">
-    <option value="2" selected>2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
-  </select>
+  <!-- setup container -->
+  <div class="setup-container">
 
+  <!-- Config Selection Row -->
+  <div class="button-row">
+    <div class="dropdown-wrapper">
+      <select id="presetSelect" class="secondary">
+        <option value="">-Presets-</option>
+        <!-- dynamically populated options -->
+      </select>
+    </div>
+    <button id="customBtn" class="secondary">Customize</button>
+    <button id="importConfigBtn" class="secondary">Import</button>
+    <!-- <input type="file" id="importFile" accept=".spar" style="display:none;"> -->
+  </div>
+  
+    <!-- Config Info Box -->
+    <div id="configInfo" class="config-info"></div>
 
-  <div id="fighterOptions"></div>
-
-  <button class="primary" onclick="goToSpreadsheet()">Go</button>
-  <!-- <button class="secondary" onclick="importSpreadsheet()">Import Spreadsheet</button> -->
+    <!-- Action Buttons Row -->
+    <div class="button-row">
+      <button class="secondary" id="exportConfigBtn">Export Config</button>
+      <input type="file" id="importFile" accept=".spar,.json" style="display:none;">
+      
+      <button id="buildBtn" class="primary">Build Spreadsheet</button>
+      <button class="secondary" id="importFightBtn">Import Fight</button>
+    </div>
+  </div>
    
   <div style="text-align: center; margin-top: 4px;">
     <a href="help.html" target="_blank" style="font-size: 0.85em; text-decoration: underline; color: #4CAF50;">
@@ -53,6 +71,40 @@
   </p>
 </footer>
 
+<!-- Fullscreen Custom Setup Modal -->
+<div id="customModal" class="modal">
+  <div class="modal-content">
+    <h2>Custom Fight Setup</h2>
+
+    <div style="display: flex; align-items: center; margin: 1rem 0;">
+      <label for="numFightersDropdown" style="font-weight: bold; margin-right: 10px;">
+        Number of Fighters:
+      </label>
+      <select id="numFightersDropdown" onchange="renderCombatantBlocks(window._currentTemporaryFighters)">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+    </div>
+
+    <hr>
+
+    <div id="combatantsContainer"></div>
+
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeCustomModal()">Cancel</button>
+      <button class="primary" onclick="confirmCustomSetup()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- load all js and config -->
+<script src="SPARconfig.js"></script>
+<script>
+  window.SPARconfig = new SPARconfig();
+</script>
 <script src="index.js"></script>
+
 </body>
 </html>

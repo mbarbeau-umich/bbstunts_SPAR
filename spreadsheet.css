@@ -250,3 +250,9 @@ button.secondary:hover {
 #spreadsheetTable tr:nth-child(odd) td {
   background-color: #ffffff;   /* white */
 }
+
+#spreadsheetTable {
+  width: auto;             /* do not stretch to 100% */
+  table-layout: fixed;     /* respect <colgroup> widths */
+  border-collapse: collapse;
+}

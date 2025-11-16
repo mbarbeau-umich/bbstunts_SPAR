@@ -78,37 +78,6 @@ async function loadOptions() {
 }
 
 
-
-/* 
-Generates drop down item based on a given option list
-*/
-let dropdownCounter = 0;
-function createDropdown(options) {
-  dropdownCounter++;
-  const listId = "dropdownList_" + dropdownCounter;
-
-  const input = document.createElement("input");
-  input.setAttribute("list", listId);
-  input.className = "cell-dropdown";
-  input.autocomplete = "off";
-  input.value = "";
-
-  const datalist = document.createElement("datalist");
-  datalist.id = listId;
-  options.forEach(opt => {
-    const o = document.createElement("option");
-    o.value = opt;
-    datalist.appendChild(o);
-  });
-
-  const wrapper = document.createElement("div");
-  wrapper.className = "dropdown-wrapper";
-  wrapper.appendChild(input);
-  wrapper.appendChild(datalist);
-
-  return wrapper;
-} // **************************************************************************************
-
 /* 
 
 */
@@ -126,50 +95,76 @@ function makeHandLabel(fighterIdx, handIdx, fightersState) {
 /* 
 Constructs the table based on the selected configuration/fighter options
 */
+function createDropdown(options = []) {
+  // returns a wrapper div containing <input list="..."> and the datalist
+  const wrapper = document.createElement("div");
+  wrapper.className = "dropdown-wrapper";
+  const id = "dl_" + Math.random().toString(36).slice(2,9);
+  const input = document.createElement("input");
+  input.setAttribute("list", id);
+  input.className = "cell-dropdown";
+  input.autocomplete = "off";
+
+  const datalist = document.createElement("datalist");
+  datalist.id = id;
+  options.forEach(o => {
+    const opt = document.createElement("option");
+    opt.value = o;
+    datalist.appendChild(opt);
+  });
+
+  wrapper.appendChild(input);
+  wrapper.appendChild(datalist);
+  return wrapper;
+}
+
 function buildSpreadsheet() {
   const table = document.getElementById("spreadsheetTable");
   if (!table) return;
-  // ensure not editable at table level
+
+  // Disable table-level editing
   table.removeAttribute("contenteditable");
   table.contentEditable = "false";
 
-  const title = localStorage.getItem("fightTitle") || "Demo Fight";
-  const numFighters = parseInt(localStorage.getItem("numFighters")) || 2;
-  const fighterOptions = JSON.parse(localStorage.getItem("fighterOptions")) || Array(numFighters).fill(1);
+  // --------------------------
+  // Get data from config
+  // --------------------------
+  const cfg = window.SPARconfig || {};
+  const title = cfg.fight_title || "Untitled Fight";
+  const author = cfg.fight_author || "Unknown";
+  const fightersState = Array.isArray(cfg.combatants)
+    ? cfg.combatants.map(c => ({
+        hands: c.hands || 1,
+        weapons: Array.isArray(c.weapon)
+          ? c.weapon
+          : Array.isArray(c.weapons)
+          ? c.weapons
+          : [c.weapon || "unarmed"]
+      }))
+    : Array.isArray(cfg.fightersState)
+    ? cfg.fightersState
+    : [];
+  const numFighters = fightersState.length || 2;
 
-  // rich state saved from setup: [{hands: N, weapons: ["sword","shield"]}, ...]
-  let fightersState = JSON.parse(localStorage.getItem("fightersState") || "null");
-  if (!Array.isArray(fightersState) || fightersState.length < numFighters) {
-    // fallback: create simple structure (default weapon token)
-    const fallbackW = (typeof weaponTypes !== "undefined" && weaponTypes.includes("unarmed")) ? "unarmed" :
-                      (typeof weaponTypes !== "undefined" && weaponTypes.length ? weaponTypes[0] : "hand");
-    fightersState = [];
-    for (let i = 0; i < numFighters; i++) {
-      const hands = fighterOptions[i] || 1;
-      const weapons = Array.from({ length: hands }, () => fallbackW);
-      fightersState.push({ hands, weapons });
-    }
-  }
-
-  const author = localStorage.getItem("author") || "Unknown";
   const dateStr = new Date().toLocaleDateString();
 
-  // wipe table
+  // --------------------------
+  // Column widths (adjust as you like)
+  // --------------------------
+  const COL_WIDTHS = {
+    rowNum: "36px",
+    footwork: "90px",
+    weapon: "80px",
+    e: "60px",
+    notes: "220px"
+  };
+
+  // --------------------------
+  // Start building table
+  // --------------------------
   table.innerHTML = "";
 
-  // --- compute main columns (excluding left rowNum and right Notes) ---
-  let mainCols = 0;
-  if (numFighters === 2) {
-    // each fighter contributes (hands + 1) (footwork + hands) and there's 1 shared {e}
-    mainCols = fighterOptions.reduce((sum, h) => sum + (h + 1), 0) + 1;
-  } else {
-    // each fighter contributes (footwork + {e} + hands) => (hands + 2)
-    mainCols = fighterOptions.reduce((sum, h) => sum + (h + 2), 0);
-  }
-
-  const totalCols = 1 + mainCols + 1; // +1 for left rowNum column, +1 for right Notes column
-
-  // --- Header row (Author | Title | Date) ---
+  // Header row (author / title / date)
   const headerRow = table.insertRow();
   const authorCell = headerRow.insertCell();
   authorCell.innerText = `Author(s): ${author}`;
@@ -178,8 +173,13 @@ function buildSpreadsheet() {
   authorCell.style.padding = "8px";
   authorCell.contentEditable = "true";
 
+  const totalCols = 1 + // row number
+    fightersState.reduce((sum, f, i) => sum + (f.hands + (numFighters === 2 ? 1 : 2)), 0) +
+    (numFighters === 2 ? 1 : 0) + // shared e for 2-fighter mode
+    1; // notes col
+
   const titleCell = headerRow.insertCell();
-  titleCell.colSpan = totalCols - 2; // 1 cell for author + 1 for date => rest is title
+  titleCell.colSpan = totalCols - 2;
   titleCell.innerHTML = `<strong>${title}</strong>`;
   titleCell.style.textAlign = "center";
   titleCell.style.borderBottom = "2px solid black";
@@ -192,225 +192,269 @@ function buildSpreadsheet() {
   dateCell.style.borderBottom = "2px solid black";
   dateCell.style.padding = "8px";
 
-  // --- Spacer row ---
-  const spacerRow = table.insertRow();
-  const spacerCell = spacerRow.insertCell();
+  // Spacer row
+  const spacer = table.insertRow();
+  const spacerCell = spacer.insertCell();
   spacerCell.colSpan = totalCols;
   spacerCell.style.height = "6px";
   spacerCell.style.backgroundColor = "#eee";
 
-  // --- Fighter header row (top row of the two-row header area) ---
+  // Fighter header
   const fighterRow = table.insertRow();
   fighterRow.classList.add("header-fighter");
 
-  // Leftmost '#' header cell (spans two header rows)
+  // Leftmost #
   const numHead = fighterRow.insertCell();
   numHead.rowSpan = 2;
   numHead.innerText = "#";
   numHead.style.border = "2px solid black";
   numHead.style.textAlign = "center";
-  numHead.style.width = "36px";
+  numHead.style.width = COL_WIDTHS.rowNum;
 
   if (numFighters === 2) {
-    // Fighter 1 block
+    // Fighter 1
     const f1 = fighterRow.insertCell();
-    f1.colSpan = fighterOptions[0] + 1; // footwork + hands
+    f1.colSpan = fightersState[0].hands + 1;
     f1.innerText = "Combatant 1";
     f1.style.border = "2px solid black";
     f1.style.textAlign = "center";
     f1.contentEditable = "true";
 
-    // Shared {e} column between the two fighters (spans the two header rows)
+    // Shared {e}
     const eCell = fighterRow.insertCell();
     eCell.rowSpan = 2;
     eCell.innerText = "{e}";
     eCell.style.border = "2px solid black";
     eCell.style.textAlign = "center";
+    eCell.style.width = COL_WIDTHS.e;
 
-    // Fighter 2 block
+    // Fighter 2
     const f2 = fighterRow.insertCell();
-    f2.colSpan = fighterOptions[1] + 1;
+    f2.colSpan = fightersState[1].hands + 1;
     f2.innerText = "Combatant 2";
     f2.style.border = "2px solid black";
     f2.style.textAlign = "center";
     f2.contentEditable = "true";
-
   } else {
-    // 3+ fighters: each fighter block includes footwork + {e} + hands
-    for (let i = 0; i < numFighters; i++) {
-      const f = fighterRow.insertCell();
-      f.colSpan = (fighterOptions[i] || 1) + 2; // footwork + {e} + hands
-      f.innerText = `Combatant ${i + 1}`;
-      f.style.border = "2px solid black";
-      f.style.textAlign = "center";
-      f.contentEditable = "true";
-    }
+    // 3+ fighters
+    fightersState.forEach((f, i) => {
+      const block = fighterRow.insertCell();
+      block.colSpan = f.hands + 2;
+      block.innerText = `Combatant ${i + 1}`;
+      block.style.border = "2px solid black";
+      block.style.textAlign = "center";
+      block.contentEditable = "true";
+    });
   }
 
-  // Rightmost 'Notes' column (spans the two header rows)
+  // Rightmost Notes
   const notesHead = fighterRow.insertCell();
   notesHead.rowSpan = 2;
   notesHead.innerText = "Notes";
   notesHead.style.border = "2px solid black";
   notesHead.style.textAlign = "center";
-  notesHead.style.width = "220px";
+  notesHead.style.width = COL_WIDTHS.notes;
 
-  // -------------------------
-  // --- Sub-header (second header row with Footwork / Hand names / {e} per fighter) ---
-  // We'll build a colTypes array so data rows line up with the correct type per column.
-  const subHeaderRow = table.insertRow();
-  subHeaderRow.classList.add("header-sub");
+  // Subheader row
+  const sub = table.insertRow();
+  const colTypes = ["rowNum"];
 
-  const colTypes = []; // e.g. ['rowNum','footwork','hand:sword','e','footwork','hand:shield','notes']
-
-  // always first col is rowNum
-  colTypes.push("rowNum");
-
-  // helper: returns normalized weapon token for fighterIndex and handIndex (0-based)
-  const getWeaponFor = (fighterIndex, handIndex) => {
-    const f = fightersState[fighterIndex];
-    if (!f || !Array.isArray(f.weapons)) return null;
-    const w = f.weapons[handIndex];
-    if (!w) return null;
-    return String(w).trim().toLowerCase();
-  };
-
-  // helper: display label for hand header, with duplicate numbering if needed
-  const prettifyLabel = s => {
-    if (!s) return "";
-    return s.toString().replace(/_/g, " ").replace(/\b\w/g, ch => ch.toUpperCase());
-  };
-  const makeHandLabel = (fighterIdx, handIdx) => {
-    const f = fightersState[fighterIdx];
-    if (!f || !Array.isArray(f.weapons)) return `Hand ${handIdx + 1}`;
-    const raw = (f.weapons[handIdx] || "").toString().trim();
-    if (!raw) return `Hand ${handIdx + 1}`;
-    const token = raw.toLowerCase();
-    // count duplicates
-    const countSame = f.weapons.filter(x => (x || "").toString().trim().toLowerCase() === token).length;
-    const display = prettifyLabel(token);
-    if (countSame > 1) {
-      // number them (use index among same tokens for better numbering)
-      // find the occurrence index among same tokens
-      let idx = 0;
-      for (let i = 0; i <= handIdx; i++) {
-        if ((f.weapons[i] || "").toString().trim().toLowerCase() === token) idx++;
-      }
-      return `${display} ${idx}`;
-    }
-    return display;
-  };
+  const prettify = s =>
+    s ? s.toString().replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()) : "";
 
   if (numFighters === 2) {
-    // Fighter 1: Footwork + Hands
-    const h1 = fighterOptions[0] || 1;
-    // insert subheader cells for Footwork and each hand for fighter 1
-    const labels1 = ["Footwork", ...Array.from({ length: h1 }, (_, i) => makeHandLabel(0, i))];
-    labels1.forEach((lbl, idx) => {
-      const cell = subHeaderRow.insertCell();
-      cell.innerText = lbl;
-      if (idx === 0) colTypes.push("footwork");
-      else {
-        const weaponKey = getWeaponFor(0, idx - 1) || (weaponTypes && weaponTypes[0]) || "hand";
-        colTypes.push(`hand:${weaponKey}`);
-      }
-      cell.style.border = "1px solid gray";
-      cell.style.textAlign = "center";
-      cell.contentEditable = "true";
+    // Fighter 1
+    sub.insertCell().innerText = "Footwork";
+    colTypes.push("footwork");
+
+    fightersState[0].weapons.forEach(w => {
+      const c = sub.insertCell();
+      c.innerText = prettify(w);
+      c.style.width = COL_WIDTHS.weapon;
+      c.style.textAlign = "center";
+      c.style.border = "1px solid gray";
+      colTypes.push(`hand:${w}`);
     });
 
-    // shared {e} column: we DO NOT insert a subHeader cell here because fighterRow already created a cell with rowSpan=2.
+    // shared {e}
     colTypes.push("e");
 
-    // Fighter 2: Footwork + Hands
-    const h2 = fighterOptions[1] || 1;
-    const labels2 = ["Footwork", ...Array.from({ length: h2 }, (_, i) => makeHandLabel(1, i))];
-    labels2.forEach((lbl, idx) => {
-      const cell = subHeaderRow.insertCell();
-      cell.innerText = lbl;
-      if (idx === 0) colTypes.push("footwork");
-      else {
-        const weaponKey = getWeaponFor(1, idx - 1) || (weaponTypes && weaponTypes[0]) || "hand";
-        colTypes.push(`hand:${weaponKey}`);
-      }
-      cell.style.border = "1px solid gray";
-      cell.style.textAlign = "center";
-      cell.contentEditable = "true";
-    });
+    // Fighter 2
+    sub.insertCell().innerText = "Footwork";
+    colTypes.push("footwork");
 
+    fightersState[1].weapons.forEach(w => {
+      const c = sub.insertCell();
+      c.innerText = prettify(w);
+      c.style.width = COL_WIDTHS.weapon;
+      c.style.textAlign = "center";
+      c.style.border = "1px solid gray";
+      colTypes.push(`hand:${w}`);
+    });
   } else {
-    // 3+ fighters: each fighter contributes Footwork, {e}, Hand1..HandN
-    for (let fi = 0; fi < numFighters; fi++) {
-      const hands = fighterOptions[fi] || 1;
-      // labels: Footwork, {e}, Hand1..HandN
-      const labels = ["Footwork", "{e}", ...Array.from({ length: hands }, (_, i) => makeHandLabel(fi, i))];
-      labels.forEach((lbl, idx) => {
-        const cell = subHeaderRow.insertCell();
-        cell.innerText = lbl;
-        if (lbl === "{e}") {
-          colTypes.push("e");
-        } else if (idx === 0) {
-          colTypes.push("footwork");
-        } else {
-          // hand index is idx - 2 (after Footwork and {e})
-          const handIndex = idx - 2;
-          const weaponKey = getWeaponFor(fi, handIndex) || (weaponTypes && weaponTypes[0]) || "hand";
-          colTypes.push(`hand:${weaponKey}`);
-        }
-        cell.style.border = "1px solid gray";
-        cell.style.textAlign = "center";
-        // keep subheaders non-editable for multi-fighter layout if you prefer
-        cell.contentEditable = "false";
+    // 3+ fighters
+    fightersState.forEach((f, i) => {
+      const labels = ["Footwork", "{e}", ...f.weapons];
+      labels.forEach(lbl => {
+        const c = sub.insertCell();
+        c.innerText = prettify(lbl);
+        c.style.border = "1px solid gray";
+        c.style.textAlign = "center";
+        if (lbl === "{e}") c.style.width = COL_WIDTHS.e;
+        else if (lbl === "Footwork") c.style.width = COL_WIDTHS.footwork;
+        else c.style.width = COL_WIDTHS.weapon;
+
+        if (lbl === "{e}") colTypes.push("e");
+        else if (lbl === "Footwork") colTypes.push("footwork");
+        else colTypes.push(`hand:${lbl.toLowerCase()}`);
       });
-    }
+    });
   }
 
-  // finally append notes column type (Notes header cell already created in fighterRow with rowSpan=2)
   colTypes.push("notes");
 
-  // --- Now create some blank example rows (data area) ---
+  // --- Create blank rows
   const defaultRows = 10;
   for (let r = 0; r < defaultRows; r++) {
     const row = table.insertRow();
-    for (let c = 0; c < colTypes.length; c++) {
-      const type = colTypes[c];
+    colTypes.forEach((type, idx) => {
       const cell = row.insertCell();
       cell.style.border = "1px solid gray";
       cell.style.padding = "6px";
-      // data cells should not be contentEditable at the cell level - inputs handle entry
-      cell.contentEditable = "false";
+      cell.contentEditable = false;
 
       if (type === "rowNum") {
         cell.innerText = r + 1;
         cell.style.textAlign = "center";
         cell.style.fontWeight = "bold";
+        cell.style.width = COL_WIDTHS.rowNum;
       } else if (type === "footwork") {
         const wrapper = createDropdown(footworkOptions || []);
         const input = wrapper.querySelector("input[list]");
-        if (input) { input.style.width = "100%"; input.style.boxSizing = "border-box"; }
+        if (input) {
+          input.style.width = "100%";
+          input.style.boxSizing = "border-box";
+        }
+        cell.style.width = COL_WIDTHS.footwork;
         cell.appendChild(wrapper);
-      } else if (type && type.startsWith("hand:")) {
-        const weaponKey = type.split(":")[1];
-        const options = (weaponOptions && weaponOptions[weaponKey]) ? weaponOptions[weaponKey] : (handOptions || []);
+      } else if (type.startsWith("hand:")) {
+        const key = type.split(":")[1];
+        const options =
+          (weaponOptions && weaponOptions[key]) || (handOptions || []);
         const wrapper = createDropdown(options);
         const input = wrapper.querySelector("input[list]");
-        if (input) { input.style.width = "100%"; input.style.boxSizing = "border-box"; }
+        if (input) {
+          input.style.width = "100%";
+          input.style.boxSizing = "border-box";
+        }
+        cell.style.width = COL_WIDTHS.weapon;
         cell.appendChild(wrapper);
       } else if (type === "e") {
         const wrapper = createDropdown(eOptions || []);
         const input = wrapper.querySelector("input[list]");
-        if (input) { input.style.width = "100%"; input.style.boxSizing = "border-box"; }
+        if (input) {
+          input.style.width = "100%";
+          input.style.boxSizing = "border-box";
+        }
+        cell.style.width = COL_WIDTHS.e;
         cell.appendChild(wrapper);
       } else if (type === "notes") {
         cell.contentEditable = "true";
         cell.innerText = "";
+        cell.style.width = COL_WIDTHS.notes;
         cell.style.textAlign = "left";
-      } else {
-        cell.innerText = "";
       }
-    }
+    });
   }
-} // end buildSpreadsheet
+}
+
+// --- helper popup for export options ---
+// --- helper popup for export options ---
+async function getExportOptions(defaultName) {
+  return new Promise((resolve) => {
+    // overlay background
+    const overlay = document.createElement("div");
+    Object.assign(overlay.style, {
+      position: "fixed",
+      inset: "0",
+      background: "rgba(0,0,0,0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: "9999",
+      backdropFilter: "blur(2px)"
+    });
+
+    // popup box
+    const box = document.createElement("div");
+    Object.assign(box.style, {
+      background: "#fff",
+      padding: "20px 24px",
+      borderRadius: "12px",
+      boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
+      width: "300px",
+      fontFamily: "system-ui, sans-serif",
+      color: "#222",
+      transform: "scale(0.95)",
+      opacity: "0",
+      transition: "all 0.15s ease-out"
+    });
+    box.innerHTML = `
+      <h3 style="margin:0 0 12px 0;font-size:18px;font-weight:600;text-align:center;">Export Spreadsheet</h3>
+      <label style="display:block;margin-bottom:6px;font-weight:500;">Filename:</label>
+      <input type="text" id="exportName" value="${defaultName}" 
+        style="width:100%;padding:6px 8px;font-size:14px;margin-bottom:12px;
+        border:1px solid #ccc;border-radius:6px;outline:none;">
+      <label style="display:flex;align-items:center;gap:8px;margin-bottom:16px;cursor:pointer;font-size:14px;">
+        <input type="checkbox" id="exportConfig" style="transform:scale(1.2);"> 
+        Also export configuration (.json)
+      </label>
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button id="cancelExportBtn" style="
+          background:#eee;border:none;padding:6px 12px;border-radius:6px;
+          font-size:14px;cursor:pointer;transition:background 0.2s;">
+          Cancel
+        </button>
+        <button id="okExportBtn" style="
+          background:#0078d4;color:#fff;border:none;padding:6px 12px;border-radius:6px;
+          font-size:14px;cursor:pointer;transition:background 0.2s;">
+          OK
+        </button>
+      </div>
+    `;
+
+    // assemble and animate in
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => {
+      box.style.transform = "scale(1)";
+      box.style.opacity = "1";
+    });
+
+    // button handlers
+    const nameInput = box.querySelector("#exportName");
+    const configBox = box.querySelector("#exportConfig");
+    box.querySelector("#cancelExportBtn").onclick = () => {
+      overlay.remove();
+      resolve(null);
+    };
+    box.querySelector("#okExportBtn").onclick = () => {
+      const filename = nameInput.value.trim();
+      const includeConfig = configBox.checked;
+      overlay.remove();
+      resolve({ filename, includeConfig });
+    };
+
+    // allow pressing Enter / Escape
+    nameInput.focus();
+    overlay.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") box.querySelector("#okExportBtn").click();
+      if (e.key === "Escape") box.querySelector("#cancelExportBtn").click();
+    });
+  });
+}
+
+
 
 /* 
 Exports the table to an excel (.xlsx) file
@@ -442,9 +486,15 @@ async function exportSpreadsheet() {
     }
   }
   fightTitle = fightTitle.replace(/[^a-z0-9_\-]/gi, "_");
-  let filename = prompt("Enter filename for export:", `SPAR_${fightTitle}.xlsx`);
-  if (!filename) return;
+
+  // let filename = prompt("Enter filename for export:", `SPAR_${fightTitle}.xlsx`);
+  // if (!filename) return;
+  // if (!filename.endsWith(".xlsx")) filename += ".xlsx";
+  const result = await getExportOptions(`SPAR_${fightTitle}.xlsx`);
+  if (!result || !result.filename) return;
+  let { filename, includeConfig } = result;
   if (!filename.endsWith(".xlsx")) filename += ".xlsx";
+
 
   // --- ExcelJS workbook/sheet (ExcelJS must be loaded before this script) ---
   const workbook = new ExcelJS.Workbook();
@@ -547,6 +597,19 @@ async function exportSpreadsheet() {
   a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
+  // --- Optionally export SPARconfig as JSON ---
+  if (includeConfig && window.SPARconfig) {
+    const configBlob = new Blob(
+      [JSON.stringify(window.SPARconfig, null, 2)],
+      { type: "application/json" }
+    );
+    const configUrl = URL.createObjectURL(configBlob);
+    const configA = document.createElement("a");
+    configA.href = configUrl;
+    configA.download = filename.replace(/\.xlsx$/, ".spar");
+    configA.click();
+    URL.revokeObjectURL(configUrl);
+  }
 } 
 
 // helper: rgb()/rgba() -> ARGB hex (robust)
@@ -572,30 +635,8 @@ function findSubHeaderIndex(table) {
   return -1;
 }
 
-// function getColTypes(table) {
-//   // returns full column types array: ['rowNum', ...middleCols..., 'notes']
-//   const subIdx = findSubHeaderIndex(table);
-//   if (subIdx === -1) return []; // fail safe
-
-//   const subRow = table.rows[subIdx];
-//   const middle = [];
-//   for (let i = 0; i < subRow.cells.length; i++) {
-//     const txt = (subRow.cells[i].textContent || "").trim();
-//     if (txt === "" || txt === "{e}") {
-//       middle.push("e");
-//     } else if (/^Footwork$/i.test(txt)) {
-//       middle.push("footwork");
-//     } else if (/^Hand\s*\d+/i.test(txt)) {
-//       middle.push("hand");
-//     } else {
-//       // unknown: keep blank cell
-//       middle.push("unknown");
-//     }
-//   }
-//   return ["rowNum", ...middle, "notes"];
-// }
 function getColTypes(table) {
-  if (!table || table.rows.length < 3) return [];
+  if (!table || table.rows.length < 4) return [];
 
   // Grab the subheader row (2nd header row)
   const subHeaderRow = table.rows[3]; // index: 0=header,1=spacer,2=fighterRow,3=subHeader
@@ -607,7 +648,11 @@ function getColTypes(table) {
   let colIndex = 1; // skip rowNum
   if (numFighters === 2) {
     // Fighter 1 footwork + hands
-    const f1Hands = JSON.parse(localStorage.getItem("fighterOptions"))[0] || 1;
+    // const f1Hands = JSON.parse(localStorage.getItem("fighterOptions"))[0] || 1;
+    const fighterOptions = JSON.parse(localStorage.getItem("fighterOptions")) || [1, 1];
+    const f1Hands = fighterOptions[0] || 1;
+    const f2Hands = fighterOptions[1] || 1;
+
     types.push("footwork");
     for (let i = 0; i < f1Hands; i++) types.push("hand");
 
@@ -615,7 +660,7 @@ function getColTypes(table) {
     types.push("e");
 
     // Fighter 2 footwork + hands
-    const f2Hands = JSON.parse(localStorage.getItem("fighterOptions"))[1] || 1;
+    // const f2Hands = JSON.parse(localStorage.getItem("fighterOptions"))[1] || 1;
     types.push("footwork");
     for (let i = 0; i < f2Hands; i++) types.push("hand");
   } else {
@@ -634,7 +679,6 @@ function getColTypes(table) {
 
   return types;
 }
-
 
 function renumberMoves(table) {
   const subIdx = findSubHeaderIndex(table);
@@ -769,11 +813,90 @@ function addBreak() {
   renumberMoves(table);
 } // **************************************************************************************
 
-/* 
-build the spreadsheet only after the options are loaded and DOM is ready
-*/
-document.addEventListener("DOMContentLoaded", async () => {
-  await loadOptions();      // wait for .txt files (or fallback)
-  buildSpreadsheet();       // now safe to build the table with loaded options
-}); // **************************************************************************************
+// function setDynamicColumnWidths(table) {
+//   if (!table) return;
 
+//   // Define base widths for each column type
+//   const colWidths = {
+//     rowNum: 40,
+//     footwork: 100,
+//     hand: 100,
+//     e: 20,
+//     notes: 180
+//   };
+
+//   // Use your existing helper to get the logical column types
+//   const colTypes = getColTypes(table);
+
+//   // Remove any existing <colgroup> (if present)
+//   const oldColGroup = table.querySelector("colgroup");
+//   if (oldColGroup) oldColGroup.remove();
+
+//   // Create a new <colgroup> element
+//   const colgroup = document.createElement("colgroup");
+
+//   // Build the colgroup dynamically
+//   colTypes.forEach(type => {
+//     const col = document.createElement("col");
+//     const width = colWidths[type] || 100; // default width
+//     col.style.width = width + "px";
+//     colgroup.appendChild(col);
+//   });
+
+//   // Insert at the start of the table
+//   table.prepend(colgroup);
+// }
+
+function setDynamicColumnWidths(table) {
+  if (!table || table.rows.length < 4) return;
+
+  // Logical column types
+  const colTypes = getColTypes(table);
+  if (!colTypes || colTypes.length === 0) return;
+
+  // Define base widths for each core type
+  const widthMap = {
+    rowNum: 40,        // small
+    footwork: 200,     // medium
+    hand: 200,         // larger for weapon names
+    e: 10,             // small shared column
+    notes: 100         // widest
+  };
+
+  // Remove any old <colgroup>
+  const old = table.querySelector("colgroup");
+  if (old) old.remove();
+
+  // Create new <colgroup>
+  const cg = document.createElement("colgroup");
+
+  for (const type of colTypes) {
+    const col = document.createElement("col");
+
+    // detect subtype like "hand:sword"
+    let baseType = type.split(":")[0];
+    const w = widthMap[baseType] || 100;
+
+    col.style.width = w + "px";
+    cg.appendChild(col);
+  }
+
+  table.prepend(cg);
+}
+
+
+// bootstrap on page load
+document.addEventListener("DOMContentLoaded", async () => {
+  // restore SPARconfig from localStorage if not already present
+  const saved = localStorage.getItem("SPARconfig");
+  if (saved) {
+    window.SPARconfig = SPARconfig.restore(saved);
+  }
+
+  await loadOptions();  // load dropdown files
+  buildSpreadsheet();
+
+  const table = document.getElementById("spreadsheetTable");
+  setDynamicColumnWidths(table);
+
+});

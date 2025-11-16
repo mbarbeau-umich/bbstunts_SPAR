@@ -1,0 +1,9 @@
+{
+  "fight_title": "Hand to Hand",
+  "fight_author": "Anyone",
+  "combatants": [
+    { "hands": 1, "weapon": ["unarmed"] },
+    { "hands": 1, "weapon": ["unarmed"] }
+  ],
+  "e_name": "e_o"
+}

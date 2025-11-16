@@ -1,0 +1,9 @@
+{
+  "fight_title": "Example Fight",
+  "fight_author": "Team BB",
+  "combatants": [
+    { "hands": 2, "weapon": ["sword","shield"] },
+    { "hands": 1, "weapon": ["staff"] }
+  ],
+  "e_name": "e_o"
+}
