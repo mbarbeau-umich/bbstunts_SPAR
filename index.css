@@ -151,14 +151,12 @@ body {
  /* Mobile = full width */
 .container {
   width: 100%;
-  margin: 0;
-  padding: 16px;
-  border-radius: 0;
-  max-width: none;
-
+  max-width: none;      /* full width on all devices */
+  margin: 0;            /* remove centering whitespace */
+  padding: 16px;        /* keep internal spacing */
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 0;     /* optional: edge-to-edge */
+  box-shadow: none;     /* optional: remove card look on mobile */
   text-align: center;
 }
 
