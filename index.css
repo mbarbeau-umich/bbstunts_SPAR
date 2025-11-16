@@ -139,7 +139,7 @@ body {
   padding: 0;
 }
 
-.container {
+/* .container {
   max-width: 600px;
   margin: 40px auto;
   padding: 20px;
@@ -147,7 +147,32 @@ body {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   text-align: center;
+} */
+ /* Mobile = full width */
+.container {
+  width: 100%;
+  margin: 0;
+  padding: 16px;
+  border-radius: 0;
+  max-width: none;
+
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
 }
+
+/* Desktop = original card style */
+@media (min-width: 700px) {
+  .container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+}
+
 
 .logo {
   display: block;
