@@ -1,236 +1,182 @@
-/* HEADER */
-.app-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  padding: 10px 20px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
-}
-.app-header img { max-height: 50px; }
-.app-header h2 { margin: 0; }
-/* HEADER --> END */
-
-/* TITLE/AUTHOR */
-.form-row {
-  display: flex;
-  align-items: center;
-  margin: 8px 0;
+/* =========================================================
+   GLOBAL BASE STYLES
+   ========================================================= */
+:root {
+  --primary-green: #4CAF50;
+  --bg-light: #f9f9f9;
+  --border-light: #ccc;
+  --radius: 8px;
+  --shadow: 0 4px 12px rgba(0,0,0,0.1);
+  --spacing: 16px;
 }
 
-.form-row label {
-  margin-right: 10px;
-  min-width: 100px; /* keeps labels aligned nicely */
-  text-align: right; /* optional, for tidy columns */
-}
-
-.form-row input {
-  flex: 1; /* makes the input take the rest of the row */
-  padding: 6px 8px;
-}
-/* TITLE/AUTHOR --> END */
-
-/* CONFIG BUTTONS */
-
-/* Flex row for config buttons */
-.button-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;            /* spacing between buttons */
-  margin: 15px 0px;
-  flex-wrap: wrap;      /* lets buttons wrap on narrow screens */
-}
-
-/* Dropdown wrapper matches the same button size */
-.dropdown-wrapper {
-  position: relative;
-  flex: 0 0 var(--config-btn-width);
-  width: var(--config-btn-width);
+* {
   box-sizing: border-box;
 }
 
-/* Dropdown menu */
-#presetMenu {
-  position: absolute;
-  top: 100%; /* directly below the button */
-  left: 0;
-  right: 0;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  list-style: none;
-  margin: 8px 0 0 0;
-  padding: 0;
-  z-index: 1000;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-}
-
-#presetMenu li {
-  padding: 10px;
-  cursor: pointer;
-}
-
-#presetMenu li:hover {
-  background: #f0f0f0;
-}
-
-/* Hide by default */
-.hidden {
-  display: none;
-}
-/* CONFIG BUTTONS --> END */
-
-/* SETUP AREA */
-#configInfo {
-  white-space: normal !important;   /* STOP preserving newlines */
-  display: flex;
-  flex-direction: column;
-  gap: 8px;                         /* clean consistent spacing */
-  padding: 10px;
-}
-
-/* Compact pretty config summary */
-.config-combatant {
-  background: #f0f0f0;
-  border-radius: 6px;
-  padding: 8px 10px;
-  text-align: left;
-  font-size: 0.9rem;
-}
-.config-combatant-title {
-  font-weight: bold;
-  margin-bottom: 2px;
-}
-.config-combatant-weapons {
-  opacity: 0.85;
-}
-/* SETUP AREA --> END */
-
-
-
-/* ----------------------- \/\/\/\/\/\/\/\/\/\/\/\/ */
-/* FIGHT OPTIONS */
-.fighter-option {
-  /* display: flex; */
-  align-items: center;
-  min-width: 120px;
-  margin: 8px 0;
-  gap: 8px;
-}
-
-.fighter-option input[type="number"],
-#numFighters {
-  width: 60px;
-  min-width: 120px;
-  padding: 4px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  text-align: center;
-}
-/* FIGHT OPTIONS --> END*/
-
-
 body {
   font-family: Arial, sans-serif;
-  background: #f9f9f9;
+  background: var(--bg-light);
   margin: 0;
   padding: 0;
 }
 
-/* .container {
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  text-align: center;
-} */
- /* Mobile = full width */
+/* =========================================================
+   MAIN CONTAINER (Mobile-first)
+   ========================================================= */
 .container {
   width: 100%;
-  max-width: none;      /* full width on all devices */
-  margin: 0;            /* remove centering whitespace */
-  padding: 16px;        /* keep internal spacing */
-  background: #fff;
-  border-radius: 0;     /* optional: edge-to-edge */
-  box-shadow: none;     /* optional: remove card look on mobile */
+  padding: var(--spacing);
+  background: white;
   text-align: center;
 }
 
-/* Desktop = original card style */
+/* Desktop card appearance */
 @media (min-width: 700px) {
   .container {
     max-width: 600px;
     margin: 40px auto;
     padding: 20px;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow);
   }
 }
 
-
+/* =========================================================
+   LOGO + TITLES
+   ========================================================= */
 .logo {
   display: block;
   max-height: 80px;
   max-width: 100%;
-  margin: 0 auto 10px auto; /* center horizontally, margin bottom 10px */
+  margin: 0 auto 10px auto;
 }
 
-h1 { margin-bottom: 20px; }
-
-select {
-  margin: 0;
-  display: inline-block;
-  width: auto;
+h1 {
+  margin-bottom: 20px;
 }
 
-.dropdown-wrapper select {
-  width: 100%;       /* fill wrapper */
-  height: 40px;      /* match button height visually */
-  margin: 0;         /* no extra spacing */
-  box-sizing: border-box;
+/* =========================================================
+   FORM ROWS (Title, Author)
+   ========================================================= */
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
 }
 
-input, select {
+.form-row label {
+  min-width: 100px;
+  text-align: right;
+}
+
+.form-row input {
+  flex: 1;
   padding: 8px;
-  width: 80%;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
 }
 
-/* BUTTONs */
-button {
-  flex: 0 0 var(--config-btn-width); /* don't grow or shrink, use exact width */
-  width: var(--config-btn-width);
+/* Mobile: stack label/input */
+@media (max-width: 480px) {
+  .form-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .form-row label {
+    text-align: left;
+    min-width: auto;
+  }
+}
+
+/* =========================================================
+   BUTTON ROWS & BUTTONS
+   ========================================================= */
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+button,
+.dropdown-wrapper select {
+  width: 100%;                   /* fluid buttons */
+  max-width: 180px;              /* but don’t get huge */
   padding: 12px 16px;
-  min-width: 120px;     /* optional floor if viewport gets tiny */
-  text-align: center;
+  border-radius: var(--radius);
   border: none;
-  border-radius: 8px;
-  background: #eee;
-  color: black;
-  font-size: 1rem;
   cursor: pointer;
-  position: relative; /* important for dropdown positioning */
-  box-sizing: border-box;
+  font-size: 1rem;
 }
 
-button.primary { 
-  background: #4CAF50; 
-  color: white; 
+/* Primary / secondary */
+button.primary {
+  background: var(--primary-green);
+  color: white;
 }
-button.secondary { 
-  background: #eee; 
-  color: black
+button.secondary {
+  background: #eee;
 }
-/* BOTTONs --> END */
 
-/* ---------------------- /\/\/\/\/\/\/\ */
+/* Dropdown wrapper */
+.dropdown-wrapper {
+  width: 100%;
+  max-width: 180px;
+}
 
-/* FOOTER */
+/* The dropdown select itself */
+select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  background: #eee;
+}
+
+/* =========================================================
+   CONFIG SUMMARY BOX
+   ========================================================= */
+#configInfo {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.config-combatant {
+  background: #f0f0f0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.config-combatant-title {
+  font-weight: bold;
+}
+
+/* =========================================================
+   FIGHT OPTION CONTROLS
+   ========================================================= */
+.fighter-option {
+  min-width: 120px;
+  margin: 8px 0;
+}
+
+.fighter-option input[type="number"] {
+  width: 60px;
+  padding: 4px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-light);
+  text-align: center;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
 .footer {
   margin-top: 30px;
   text-align: center;
@@ -239,44 +185,40 @@ button.secondary {
 }
 
 .footer a {
-  color: #4CAF50;
+  color: var(--primary-green);
   text-decoration: none;
 }
-
 .footer a:hover {
   text-decoration: underline;
 }
-/* FOOTER --> END */
 
-
-
-/* CUSTOM PAGE */
+/* =========================================================
+   MODAL (Custom Setup)
+   ========================================================= */
 .modal {
-  display: none; 
+  display: none;
   position: fixed;
   z-index: 1000;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.6);
+  inset: 0;
+  background: rgba(0,0,0,0.6);
 }
 
 .modal-content {
-  background: #fff;
+  background: white;
   margin: 2% auto;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: var(--radius);
   width: 90%;
   max-width: 1000px;
   min-height: 80%;
-  position: relative;
 }
 
+/* Combatant rows */
 .combatant-block {
   display: flex;
   align-items: center;
-  margin: 20px 0;
   gap: 20px;
+  margin: 20px 0;
 }
 
 .combatant-label {
@@ -288,25 +230,23 @@ button.secondary {
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-left: 2px solid #444;
   padding-left: 20px;
-  min-height: 60px;
+  border-left: 2px solid #444;
 }
 
 .hands-column select {
-  margin: 5px 0;
   width: 150px;
+  margin: 5px 0;
 }
 
+/* Modal footer */
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 2rem;
   gap: 10px;
+  margin-top: 2rem;
 }
 
 .modal-actions button {
   padding: 10px 20px;
 }
-
-/* CUSTOM PAGE --> END */
