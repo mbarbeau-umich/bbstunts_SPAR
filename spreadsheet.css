@@ -137,9 +137,10 @@ button.secondary { background: #eee; }
 }
 
 table {
-  border-collapse: separate;   /* allows sticky rows to keep their own borders */
-  border-spacing: 0;           /* still keep cells touching */
-  width: 100%;
+  table-layout: fixed;       /* keeps column widths consistent */
+  border-collapse: separate;
+  border-spacing: 0;
+  width: auto;               /* DO NOT stretch table to 100% */
   text-align: center;
   background: #fff;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
@@ -147,9 +148,10 @@ table {
 
 
 th, td {
-  border: 1px solid #ccc;
   padding: 12px;
-  min-width: 80px;
+  min-width: 0;        /* allow colgroup to control width */
+  width: auto;         /* do not override colgroup */
+  border: 1px solid #ccc;
 }
 
 th { background: #f4f4f4; }
@@ -206,7 +208,31 @@ button.secondary:hover {
 }
 
 /* tweak notes column so it can expand visually in the browser (optional) */
-#spreadsheetTable td[contenteditable="true"] { min-width: 120px; }
+/* #spreadsheetTable td[contenteditable="true"] { min-width: 120px; } */
+
+#spreadsheetTable col {
+  width: inherit !important;   /* allow JS-defined widths */
+}
+
+#spreadsheetTable col.thin {
+  width: 10px !important;
+  max-width: 10px !important;
+  min-width: 10px !important;
+}
+#spreadsheetTable td.thin,
+#spreadsheetTable th.thin {
+  padding: 0 !important;
+}
+#spreadsheetTable td.thin .cell-dropdown {
+  padding: 0 !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+#spreadsheetTable td.thin, 
+#spreadsheetTable th.thin {
+  white-space: normal !important;
+}
+
 
 /* ---------------- Footer / Botton Bar ---------------- */
 .buttons-row {
@@ -249,10 +275,4 @@ button.secondary:hover {
 
 #spreadsheetTable tr:nth-child(odd) td {
   background-color: #ffffff;   /* white */
-}
-
-#spreadsheetTable {
-  width: auto;             /* do not stretch to 100% */
-  table-layout: fixed;     /* respect <colgroup> widths */
-  border-collapse: collapse;
 }

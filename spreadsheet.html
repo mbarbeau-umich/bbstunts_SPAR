@@ -16,7 +16,7 @@
       <h2>SPAR</h2>
     </div>
     <div class="header-right">
-      <button class="primary" onclick="exportSpreadsheet()">Export</button>
+      <button class="primary" onclick="exportTable()">Export</button>
     </div>
   </header>
 
@@ -29,12 +29,12 @@
     <button class="secondary" onclick="addRow()">+ Row</button>
   </div>
 
-
-<!-- 1. First load SheetJS library (from CDN) -->
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script> -->
-
 <!-- Load ExcelJS (needed for your new exportSpreadsheet) -->
 <script src="https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js"></script>
+<!-- load html2canvas + jsPDF for table exporting -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 
 
 <!-- load all js -->
