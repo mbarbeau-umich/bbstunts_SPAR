@@ -150,10 +150,9 @@ function setDynamicColumnWidths(table, colTypes) {
     const base = type.split(":")[0];
 
     const width = widthMap[base] || 100;
-    if (width <= 20) col.classList.add("thin");
-    if (type === "rowNum" || type === "e") {
-    cell.classList.add("thin");
-}
+    if (width <= 20 || type === "rowNum" || type === "e") {
+      col.classList.add("thin");
+    }
 
     // strong browser-safe way
     col.width = width;
